@@ -1,0 +1,25 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "c0907f1e-eb46-443e-b015-b0cc0323c2db",
+  "alias": "MaintenanceRequestWebPart",
+  "componentType": "WebPart",
+ 
+  "version": "*",
+  "manifestVersion": 2,
+ 
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70",  
+    "group": { "default": "Advanced" },
+    "title": { "default": "Maintenance Request" },
+    "description": { "default": "Maintenance Request WebPart" },
+    "officeFabricIconFontName": "Wrench",
+    "properties": {
+        "description": "Maintenance Request Service"
+            
+    }
+  }]
+}

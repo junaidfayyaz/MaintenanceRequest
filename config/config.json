@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "maintenance-request-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/maintenanceRequest/MaintenanceRequestWebPart.js",
+          "manifest": "./src/webparts/maintenanceRequest/MaintenanceRequestWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ServiceWebPartStrings": "lib/webparts/maintenanceRequest/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
+  }
+}
