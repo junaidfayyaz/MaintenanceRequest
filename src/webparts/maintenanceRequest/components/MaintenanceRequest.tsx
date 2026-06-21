@@ -78,6 +78,16 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
         [props.Location_col]: formData.Location,
         [props.Description_col]: formData.Description,
         [props.SubmittedBy_col]: formData.requestedBy,
+        "Service": "Report An Issue",
+        "Team": "Service Desk",
+        "OwnerTeam": "Service Desk",
+        "Status": "Logged",
+        "Subject": formData.Category ? `Maintenance Request - ${formData.Category}` : "Maintenance Request",
+        "Summary": formData.Category ? `Maintenance Request - ${formData.Category}` : "Maintenance Request",
+        "Symptom": formData.Description ? formData.Description : "Maintenance Request",
+        "Description": formData.Description ? formData.Description : "Maintenance Request",
+        "Impact": "Low",
+        "Urgency": "Low"
       };
 
       const response = await fetch(props.Apilink, {

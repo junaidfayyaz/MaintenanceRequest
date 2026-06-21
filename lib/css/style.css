@@ -130,7 +130,8 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
   display: block !important;
   font-size: 15px;
   font-weight: 500 !important;
-  margin-top: 26px !important;
+  margin-top: 10px !important;
+  margin-bottom: 5px !important;
 }
 
 .form-text-oneline {
@@ -215,7 +216,7 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
     !important;
   height: 60px !important;
   background-color: transparent !important;
-  margin-bottom: 20px !important;
+  margin-bottom: 0px !important;
   padding: 10px;
   box-sizing: border-box !important;
 }
@@ -352,14 +353,9 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
   color: #555 !important;
   display: flex;
   font-size: 15px !important;
-  height: 59px !important;
-  margin-top: 4px !important;
+  height: 60px !important;
   width: 100% !important;
   z-index: 1049;
-  position: absolute;
-  right: auto;
-
-
 }
 
 .dropdownfield label {
@@ -367,7 +363,8 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
   font-weight: 500 !important;
   color: #555 !important;
   font-size: 15px;
-  margin-top: 24px !important;
+  margin-top: 10px !important;
+  margin-bottom: 5px !important;
 }
 
 .dropdownfield i {
@@ -433,7 +430,7 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
   .fieldContainer {
     display: grid;
     grid-template-columns: repeat(1, 1fr) !important;
-    column-gap: 20px;
+    gap: 20px;
   }
 
   .testelement {
@@ -669,7 +666,7 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
 .fieldContainer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  column-gap: 20px;
+  gap: 20px;
 }
 
 .buttonContainer {
@@ -747,7 +744,7 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
 .ms-Dropdown-title {
   border: 1px solid #ccc !important;
   border-radius: 6px !important;
-  height: 59px !important;
+  height: 60px !important;
   display: flex !important;
   align-items: center !important;
   padding: 0 12px !important;
