@@ -409,9 +409,25 @@ const MaintenanceRequestUIForm: React.FC<IRequestUIFormProps> = (props) => {
               selectedKey={formData.Category}
               className={`dropdownfield ${errors.Category ? "error-field" : ""}`}
               styles={{
+                root: {
+                  marginBottom: '0px'
+                },
                 dropdown: {
                   borderColor: errors.Category ? "red" : undefined,
+                  height: '60px'
                 },
+                title: {
+                  height: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 12px',
+                  borderRadius: '6px',
+                  borderColor: '#ccc'
+                },
+                caretDownWrapper: {
+                  height: '60px',
+                  lineHeight: '60px'
+                }
               }}
               onChange={handleCategoryChange}
               options={categoryOptions}
@@ -424,9 +440,25 @@ const MaintenanceRequestUIForm: React.FC<IRequestUIFormProps> = (props) => {
               disabled={!formData.Category}
               className={`dropdownfield ${errors.SubCategory ? "error-field" : ""}`}
               styles={{
+                root: {
+                  marginBottom: '0px'
+                },
                 dropdown: {
                   borderColor: errors.SubCategory ? "red" : undefined,
+                  height: '60px'
                 },
+                title: {
+                  height: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 12px',
+                  borderRadius: '6px',
+                  borderColor: '#ccc'
+                },
+                caretDownWrapper: {
+                  height: '60px',
+                  lineHeight: '60px'
+                }
               }}
               onChange={handleSubCategoryChange}
               options={subCategoryOptions}

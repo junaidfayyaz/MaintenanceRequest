@@ -15,6 +15,10 @@
   min-height: auto;
 }
 
+.root-197 {
+  margin-bottom: 0px !important;
+}
+
 .c-red {
   color: #f11111;
 }
@@ -367,6 +371,10 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
   margin-bottom: 5px !important;
 }
 
+.dropdownfield .ms-Dropdown {
+  height: 60px !important;
+}
+
 .dropdownfield i {
   color: black !important;
   display: flex;
@@ -667,6 +675,7 @@ button.ms-Button.ms-Button--default.cancel-formbtn.root-147 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  row-gap: 0px;
 }
 
 .buttonContainer {
