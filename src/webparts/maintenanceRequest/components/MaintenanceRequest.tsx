@@ -90,6 +90,11 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
         "Urgency": "Low"
       };
 
+      console.log("=== VERIFY DATA ===");
+      console.log("Raw Form Data:", formData);
+      console.log("API Payload:", payload);
+      console.log("===================");
+
       const response = await fetch(props.Apilink, {
         method: "POST",
         headers: {

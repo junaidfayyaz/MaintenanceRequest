@@ -78,7 +78,7 @@ export default class MaintenanceRequestWebPart extends BaseClientSideWebPart<IMa
     }
 
     if (!this.properties.Category_col) this.properties.Category_col = "par-2D343B2215B945A88B82D5299CA4536D";
-    if (!this.properties.SubCategory_col) this.properties.SubCategory_col = "par-C06F7C725B924E09ABF2D8EBBB103CA8";
+    if (!this.properties.SubCategory_col) this.properties.SubCategory_col = "par-6276B7DC33804760B17A9623EDB04806";
     if (!this.properties.Department_col) this.properties.Department_col = "par-683F9D91D9D54A03B795551575E97AE1";
     if (!this.properties.Location_col) this.properties.Location_col = "par-89C9D84DF7054849AEFF75D680008086";
     if (!this.properties.Description_col) this.properties.Description_col = "par-08A9F3D288354138B6A8018622277C43";
