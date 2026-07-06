@@ -125,8 +125,9 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
         throw new Error("Failed to parse JSON: " + e.message);
       }
 
-      const strRequestNum = parsedData?.IncidentNumber || parsedData?.ServiceReqNumber;
-      const requestRecId = parsedData?.RecId;
+      const dataObj = Array.isArray(parsedData) ? parsedData[0] : parsedData;
+      const strRequestNum = dataObj?.IncidentNumber || dataObj?.ServiceReqNumber || dataObj?.requestNumber || parsedData?.strRequestNum || dataObj?.ServiceReqNum;
+      const requestRecId = dataObj?.RecId || dataObj?.recId || parsedData?.RecId;
 
       let flag = true;
       if (formData.files && formData.files.length > 0) {
