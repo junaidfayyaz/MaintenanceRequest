@@ -70,25 +70,34 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
 
   const saveRequest = async (formData: IMaintenanceRequestFormData) => {
     try {
+      let params: any = {
+        [props.Category_col]: formData.Category,
+        [props.SubCategory_col]: formData.SubCategory,
+        [props.Department_col]: formData.Department,
+        [props.Location_col]: formData.Location,
+        [props.Description_col]: formData.Description,
+        [props.ProfileLink_col]: formData.requestedBy_key || formData.requestedFor_key,
+        [props.SubmittedBy_col]: formData.requestedBy,
+      };
+
+      if (formData.Category_key) {
+        params[`${props.Category_col}-recId`] = formData.Category_key;
+      }
+      if (formData.SubCategory_key) {
+        params[`${props.SubCategory_col}-recId`] = formData.SubCategory_key;
+      }
+
       let payload = {
         attachmentsToDelete: [],
         attachmentsToUpload: [],
-        parameters: {
-          [props.Category_col]: formData.Category,
-          [props.SubCategory_col]: formData.SubCategory,
-          [props.Department_col]: formData.Department,
-          [props.Location_col]: formData.Location,
-          [props.Description_col]: formData.Description,
-          [props.ProfileLink_col]: formData.requestedBy_key || formData.requestedFor_key,
-          [props.SubmittedBy_col]: formData.requestedBy,
-        },
+        parameters: params,
         delayedFulfill: false,
         formName: "ServiceReq.ResponsiveAnalyst.DefaultLayout",
         saveReqState: false,
         serviceReqData: {
           Subject: formData.Category ? `Maintenance Request - ${formData.Category}` : "Maintenance Request",
           Symptom: formData.Description ? formData.Description : "Maintenance Request",
-          Category: "Maintenance Request",
+          Category: "",
           CreatedBy: formData.requestedBy,
         },
         subscriptionId: "EE937A037A90490D8A38B2437B567673",

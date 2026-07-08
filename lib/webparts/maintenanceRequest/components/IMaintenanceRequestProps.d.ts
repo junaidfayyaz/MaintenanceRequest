@@ -28,7 +28,9 @@ export interface IMaintenanceRequestFormData {
     requestedFor_Title: string;
     requestedFor_key: string;
     Category: string;
+    Category_key?: string;
     SubCategory: string;
+    SubCategory_key?: string;
     Department: string;
     Location: string;
     Description: string;

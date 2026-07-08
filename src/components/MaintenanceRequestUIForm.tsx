@@ -78,8 +78,7 @@ const MaintenanceRequestUIForm: React.FC<IRequestUIFormProps> = (props) => {
       const tahyahWeb = Web("https://mcitgovqa.sharepoint.com/sites/Tahyah");
       const items = await tahyahWeb.lists
         .getByTitle("MaintenanceRequestCategoryList")
-        .items.select("Category", "SubCategory")
-        .getAll();
+        .items.getAll();
       
       setListData(items);
 
@@ -99,6 +98,28 @@ const MaintenanceRequestUIForm: React.FC<IRequestUIFormProps> = (props) => {
       const selectedCategory = option.key as string;
       updateFormDropData(option, "Category");
 
+      const categoryItem = listData.find((item) => item.Category === selectedCategory);
+      let categoryKey = "";
+      if (categoryItem) {
+        // Look for any property name that might contain the Category recId
+        const possibleKeys = Object.keys(categoryItem).filter(k => k.toLowerCase().includes("recid") && !k.toLowerCase().includes("sub"));
+        if (possibleKeys.length > 0) {
+          categoryKey = categoryItem[possibleKeys[0]];
+        }
+      }
+      
+      // Fallback to user-provided mapping if not found in SharePoint list
+      if (!categoryKey && selectedCategory === "Access Control") {
+        categoryKey = "87967EC7EA98409C8C2A636924C6C797";
+      }
+
+      setFormData((prev) => ({ 
+        ...prev, 
+        Category_key: categoryKey,
+        SubCategory: "",
+        SubCategory_key: ""
+      }));
+
       // Filter subcategories based on selected category and ensure uniqueness
       const filteredSubCats = Array.from(
         new Set(
@@ -112,15 +133,38 @@ const MaintenanceRequestUIForm: React.FC<IRequestUIFormProps> = (props) => {
       setSubCategoryOptions(
         filteredSubCats.map((subcat) => ({ key: subcat as string, text: subcat as string }))
       );
-      
-      // Reset SubCategory when Category changes
-      setFormData((prev) => ({ ...prev, SubCategory: "" }));
     }
   };
 
   const handleSubCategoryChange = (event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption) => {
     if (option) {
+      const selectedSubCategory = option.key as string;
       updateFormDropData(option, "SubCategory");
+      
+      const subCategoryItem = listData.find((item) => item.Category === formData.Category && item.SubCategory === selectedSubCategory);
+      let subCategoryKey = "";
+      if (subCategoryItem) {
+        // Look for any property name that might contain the SubCategory recId
+        const possibleKeys = Object.keys(subCategoryItem).filter(k => k.toLowerCase().includes("sub") && k.toLowerCase().includes("recid"));
+        if (possibleKeys.length > 0) {
+          subCategoryKey = subCategoryItem[possibleKeys[0]];
+        } else {
+           // fallback if it just named recId on the item level
+           const fallbackKeys = Object.keys(subCategoryItem).filter(k => k.toLowerCase().includes("recid"));
+           if (fallbackKeys.length > 0) {
+             // pick one that is not the category key
+             const subKey = fallbackKeys.find(k => subCategoryItem[k] !== formData.Category_key);
+             if (subKey) subCategoryKey = subCategoryItem[subKey];
+           }
+        }
+      }
+
+      // Fallback to user-provided mapping if not found in SharePoint list
+      if (!subCategoryKey && selectedSubCategory === "automated door noisy") {
+        subCategoryKey = "6BFF811DE98A4C17B21D38E084DEB1BB";
+      }
+
+      setFormData((prev) => ({ ...prev, SubCategory_key: subCategoryKey }));
     }
   };
 
@@ -588,7 +632,9 @@ const MaintenanceRequestUIForm: React.FC<IRequestUIFormProps> = (props) => {
                   requestedFor_Title: "",
                   requestedFor_key: "",
                   Category: "",
+                  Category_key: "",
                   SubCategory: "",
+                  SubCategory_key: "",
                   Department: "",
                   Location: "",
                   Description: "",
