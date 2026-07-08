@@ -71,23 +71,27 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
   const saveRequest = async (formData: IMaintenanceRequestFormData) => {
     try {
       let payload = {
-        [props.ProfileLink_col]: formData.requestedBy_key,
-        [props.Category_col]: formData.Category,
-        [props.SubCategory_col]: formData.SubCategory,
-        [props.Department_col]: formData.Department,
-        [props.Location_col]: formData.Location,
-        [props.Description_col]: formData.Description,
-        [props.SubmittedBy_col]: formData.requestedBy,
-        "Service": "Report An Issue",
-        "Team": "Service Desk",
-        "OwnerTeam": "Service Desk",
-        "Status": "Logged",
-        "Subject": formData.Category ? `Maintenance Request - ${formData.Category}` : "Maintenance Request",
-        "Summary": formData.Category ? `Maintenance Request - ${formData.Category}` : "Maintenance Request",
-        "Symptom": formData.Description ? formData.Description : "Maintenance Request",
-        "Description": formData.Description ? formData.Description : "Maintenance Request",
-        "Impact": "Low",
-        "Urgency": "Low"
+        attachmentsToDelete: [],
+        attachmentsToUpload: [],
+        parameters: {
+          [props.Category_col]: formData.Category,
+          [props.SubCategory_col]: formData.SubCategory,
+          [props.Department_col]: formData.Department,
+          [props.Location_col]: formData.Location,
+          [props.Description_col]: formData.Description,
+          [props.ProfileLink_col]: formData.requestedBy_key || formData.requestedFor_key,
+          [props.SubmittedBy_col]: formData.requestedBy,
+        },
+        delayedFulfill: false,
+        formName: "ServiceReq.ResponsiveAnalyst.DefaultLayout",
+        saveReqState: false,
+        serviceReqData: {
+          Subject: formData.Category ? `Maintenance Request - ${formData.Category}` : "Maintenance Request",
+          Symptom: formData.Description ? formData.Description : "Maintenance Request",
+          Category: "Maintenance Request",
+          CreatedBy: formData.requestedBy,
+        },
+        subscriptionId: "EE937A037A90490D8A38B2437B567673",
       };
 
       console.log("=== VERIFY DATA ===");
@@ -98,6 +102,7 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
       const response = await fetch(props.Apilink, {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           accept: "application/json;odata=verbose",
           "Ocp-Apim-Subscription-Key": props.OcpApimKey,
           Authorization: props.Authorization,
@@ -126,8 +131,15 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
       }
 
       const dataObj = Array.isArray(parsedData) ? parsedData[0] : parsedData;
-      const strRequestNum = dataObj?.IncidentNumber || dataObj?.ServiceReqNumber || dataObj?.requestNumber || parsedData?.strRequestNum || dataObj?.ServiceReqNum;
-      const requestRecId = dataObj?.RecId || dataObj?.recId || parsedData?.RecId;
+      const rpcData = dataObj?.result?.ServiceRequests?.[0] || dataObj?.ServiceRequests?.[0];
+      const strRequestNum = rpcData?.strRequestNum || dataObj?.IncidentNumber || dataObj?.ServiceReqNumber || dataObj?.requestNumber || parsedData?.strRequestNum || dataObj?.ServiceReqNum;
+      const requestRecId = rpcData?.strRequestRecId || dataObj?.RecId || dataObj?.recId || parsedData?.RecId;
+
+      console.log("=== API RESPONSE RESULT ===");
+      console.log("Full Response Data:", parsedData);
+      console.log("Extracted ID (strRequestNum):", strRequestNum);
+      console.log("Extracted RecId:", requestRecId);
+      console.log("===========================");
 
       let flag = true;
       if (formData.files && formData.files.length > 0) {
