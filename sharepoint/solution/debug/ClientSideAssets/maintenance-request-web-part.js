@@ -15222,7 +15222,7 @@ var MaintenanceRequestWebPart = /** @class */ (function (_super) {
                 });
                 // Default configuration values
                 if (!this.properties.Apilink) {
-                    this.properties.Apilink = "https://mcitstgapim.mcit.gov.qa/ITSM/newIncident";
+                    this.properties.Apilink = "https://mcitstgapim.mcit.gov.qa/ivantitest/new";
                 }
                 if (!this.properties.attachmentApilink) {
                     this.properties.attachmentApilink = "https://mcitstgapim.mcit.gov.qa/ivantitestattachment/newattachment";
@@ -15239,7 +15239,7 @@ var MaintenanceRequestWebPart = /** @class */ (function (_super) {
                 if (!this.properties.Category_col)
                     this.properties.Category_col = "par-2D343B2215B945A88B82D5299CA4536D";
                 if (!this.properties.SubCategory_col)
-                    this.properties.SubCategory_col = "par-6276B7DC33804760B17A9623EDB04806";
+                    this.properties.SubCategory_col = "par-0AF19ED8771E48D6B3A875AD546F131A";
                 if (!this.properties.Department_col)
                     this.properties.Department_col = "par-683F9D91D9D54A03B795551575E97AE1";
                 if (!this.properties.Location_col)
@@ -49392,8 +49392,7 @@ var MaintenanceRequestUIForm = function (props) {
                     tahyahWeb = Object(_pnp_sp_webs__WEBPACK_IMPORTED_MODULE_9__[/* Web */ "e"])("https://mcitgovqa.sharepoint.com/sites/Tahyah");
                     return [4 /*yield*/, tahyahWeb.lists
                             .getByTitle("MaintenanceRequestCategoryList")
-                            .items.select("Category", "SubCategory")
-                            .getAll()];
+                            .items.getAll()];
                 case 1:
                     items = _a.sent();
                     setListData(items);
@@ -49412,19 +49411,56 @@ var MaintenanceRequestUIForm = function (props) {
         if (option) {
             var selectedCategory_1 = option.key;
             updateFormDropData(option, "Category");
+            var categoryItem = listData.find(function (item) { return item.Category === selectedCategory_1; });
+            var categoryKey_1 = "";
+            if (categoryItem) {
+                // Look for any property name that might contain the Category recId
+                var possibleKeys = Object.keys(categoryItem).filter(function (k) { return k.toLowerCase().includes("recid") && !k.toLowerCase().includes("sub"); });
+                if (possibleKeys.length > 0) {
+                    categoryKey_1 = categoryItem[possibleKeys[0]];
+                }
+            }
+            // Fallback to user-provided mapping if not found in SharePoint list
+            if (!categoryKey_1 && selectedCategory_1 === "Access Control") {
+                categoryKey_1 = "87967EC7EA98409C8C2A636924C6C797";
+            }
+            setFormData(function (prev) { return (__assign(__assign({}, prev), { Category_key: categoryKey_1, SubCategory: "", SubCategory_key: "" })); });
             // Filter subcategories based on selected category and ensure uniqueness
             var filteredSubCats = Array.from(new Set(listData
                 .filter(function (item) { return item.Category === selectedCategory_1; })
                 .map(function (item) { return item.SubCategory; })
                 .filter(Boolean)));
             setSubCategoryOptions(filteredSubCats.map(function (subcat) { return ({ key: subcat, text: subcat }); }));
-            // Reset SubCategory when Category changes
-            setFormData(function (prev) { return (__assign(__assign({}, prev), { SubCategory: "" })); });
         }
     };
     var handleSubCategoryChange = function (event, option) {
         if (option) {
+            var selectedSubCategory_1 = option.key;
             updateFormDropData(option, "SubCategory");
+            var subCategoryItem_1 = listData.find(function (item) { return item.Category === formData.Category && item.SubCategory === selectedSubCategory_1; });
+            var subCategoryKey_1 = "";
+            if (subCategoryItem_1) {
+                // Look for any property name that might contain the SubCategory recId
+                var possibleKeys = Object.keys(subCategoryItem_1).filter(function (k) { return k.toLowerCase().includes("sub") && k.toLowerCase().includes("recid"); });
+                if (possibleKeys.length > 0) {
+                    subCategoryKey_1 = subCategoryItem_1[possibleKeys[0]];
+                }
+                else {
+                    // fallback if it just named recId on the item level
+                    var fallbackKeys = Object.keys(subCategoryItem_1).filter(function (k) { return k.toLowerCase().includes("recid"); });
+                    if (fallbackKeys.length > 0) {
+                        // pick one that is not the category key
+                        var subKey = fallbackKeys.find(function (k) { return subCategoryItem_1[k] !== formData.Category_key; });
+                        if (subKey)
+                            subCategoryKey_1 = subCategoryItem_1[subKey];
+                    }
+                }
+            }
+            // Fallback to user-provided mapping if not found in SharePoint list
+            if (!subCategoryKey_1 && selectedSubCategory_1 === "automated door noisy") {
+                subCategoryKey_1 = "6BFF811DE98A4C17B21D38E084DEB1BB";
+            }
+            setFormData(function (prev) { return (__assign(__assign({}, prev), { SubCategory_key: subCategoryKey_1 })); });
         }
     };
     function handleInputChange(field, value) {
@@ -49765,7 +49801,9 @@ var MaintenanceRequestUIForm = function (props) {
                                 requestedFor_Title: "",
                                 requestedFor_key: "",
                                 Category: "",
+                                Category_key: "",
                                 SubCategory: "",
+                                SubCategory_key: "",
                                 Department: "",
                                 Location: "",
                                 Description: "",
@@ -60567,31 +60605,43 @@ var MaintenanceRequest = function (props) {
         handleShowModal();
     };
     var saveRequest = function (formData) { return __awaiter(void 0, void 0, void 0, function () {
-        var payload, response, errorText, rawResponse, jsonStart, jsonString, parsedData, strRequestNum_1, requestRecId_1, flag, error_2;
+        var params, payload, response, errorText, rawResponse, jsonStart, jsonString, parsedData, dataObj, rpcData, strRequestNum_1, requestRecId_1, flag, error_2;
         var _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var _b, _c, _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0:
-                    _b.trys.push([0, 5, , 6]);
-                    payload = (_a = {},
-                        _a[props.ProfileLink_col] = formData.requestedBy_key,
+                    _e.trys.push([0, 5, , 6]);
+                    params = (_a = {},
                         _a[props.Category_col] = formData.Category,
                         _a[props.SubCategory_col] = formData.SubCategory,
                         _a[props.Department_col] = formData.Department,
                         _a[props.Location_col] = formData.Location,
                         _a[props.Description_col] = formData.Description,
+                        _a[props.ProfileLink_col] = formData.requestedBy_key || formData.requestedFor_key,
                         _a[props.SubmittedBy_col] = formData.requestedBy,
-                        _a["Service"] = "Report An Issue",
-                        _a["Team"] = "Service Desk",
-                        _a["OwnerTeam"] = "Service Desk",
-                        _a["Status"] = "Logged",
-                        _a["Subject"] = formData.Category ? "Maintenance Request - ".concat(formData.Category) : "Maintenance Request",
-                        _a["Summary"] = formData.Category ? "Maintenance Request - ".concat(formData.Category) : "Maintenance Request",
-                        _a["Symptom"] = formData.Description ? formData.Description : "Maintenance Request",
-                        _a["Description"] = formData.Description ? formData.Description : "Maintenance Request",
-                        _a["Impact"] = "Low",
-                        _a["Urgency"] = "Low",
                         _a);
+                    if (formData.Category_key) {
+                        params["".concat(props.Category_col, "-recId")] = formData.Category_key;
+                    }
+                    if (formData.SubCategory_key) {
+                        params["".concat(props.SubCategory_col, "-recId")] = formData.SubCategory_key;
+                    }
+                    payload = {
+                        attachmentsToDelete: [],
+                        attachmentsToUpload: [],
+                        parameters: params,
+                        delayedFulfill: false,
+                        formName: "ServiceReq.ResponsiveAnalyst.DefaultLayout",
+                        saveReqState: false,
+                        serviceReqData: {
+                            Subject: formData.Category ? "Maintenance Request - ".concat(formData.Category) : "Maintenance Request",
+                            Symptom: formData.Description ? formData.Description : "Maintenance Request",
+                            Category: "",
+                            CreatedBy: formData.requestedBy,
+                        },
+                        subscriptionId: "EE937A037A90490D8A38B2437B567673",
+                    };
                     console.log("=== VERIFY DATA ===");
                     console.log("Raw Form Data:", formData);
                     console.log("API Payload:", payload);
@@ -60599,6 +60649,7 @@ var MaintenanceRequest = function (props) {
                     return [4 /*yield*/, fetch(props.Apilink, {
                             method: "POST",
                             headers: {
+                                "Content-Type": "application/json",
                                 accept: "application/json;odata=verbose",
                                 "Ocp-Apim-Subscription-Key": props.OcpApimKey,
                                 Authorization: props.Authorization,
@@ -60607,15 +60658,15 @@ var MaintenanceRequest = function (props) {
                             body: JSON.stringify(payload),
                         })];
                 case 1:
-                    response = _b.sent();
+                    response = _e.sent();
                     if (!!response.ok) return [3 /*break*/, 3];
                     return [4 /*yield*/, response.text()];
                 case 2:
-                    errorText = _b.sent();
+                    errorText = _e.sent();
                     throw new Error("Request failed: ".concat(response.status, " - ").concat(errorText));
                 case 3: return [4 /*yield*/, response.text()];
                 case 4:
-                    rawResponse = _b.sent();
+                    rawResponse = _e.sent();
                     jsonStart = rawResponse.indexOf("{");
                     if (jsonStart === -1) {
                         throw new Error("JSON not found in response");
@@ -60628,8 +60679,15 @@ var MaintenanceRequest = function (props) {
                     catch (e) {
                         throw new Error("Failed to parse JSON: " + e.message);
                     }
-                    strRequestNum_1 = (parsedData === null || parsedData === void 0 ? void 0 : parsedData.IncidentNumber) || (parsedData === null || parsedData === void 0 ? void 0 : parsedData.ServiceReqNumber);
-                    requestRecId_1 = parsedData === null || parsedData === void 0 ? void 0 : parsedData.RecId;
+                    dataObj = Array.isArray(parsedData) ? parsedData[0] : parsedData;
+                    rpcData = ((_c = (_b = dataObj === null || dataObj === void 0 ? void 0 : dataObj.result) === null || _b === void 0 ? void 0 : _b.ServiceRequests) === null || _c === void 0 ? void 0 : _c[0]) || ((_d = dataObj === null || dataObj === void 0 ? void 0 : dataObj.ServiceRequests) === null || _d === void 0 ? void 0 : _d[0]);
+                    strRequestNum_1 = (rpcData === null || rpcData === void 0 ? void 0 : rpcData.strRequestNum) || (dataObj === null || dataObj === void 0 ? void 0 : dataObj.IncidentNumber) || (dataObj === null || dataObj === void 0 ? void 0 : dataObj.ServiceReqNumber) || (dataObj === null || dataObj === void 0 ? void 0 : dataObj.requestNumber) || (parsedData === null || parsedData === void 0 ? void 0 : parsedData.strRequestNum) || (dataObj === null || dataObj === void 0 ? void 0 : dataObj.ServiceReqNum);
+                    requestRecId_1 = (rpcData === null || rpcData === void 0 ? void 0 : rpcData.strRequestRecId) || (dataObj === null || dataObj === void 0 ? void 0 : dataObj.RecId) || (dataObj === null || dataObj === void 0 ? void 0 : dataObj.recId) || (parsedData === null || parsedData === void 0 ? void 0 : parsedData.RecId);
+                    console.log("=== API RESPONSE RESULT ===");
+                    console.log("Full Response Data:", parsedData);
+                    console.log("Extracted ID (strRequestNum):", strRequestNum_1);
+                    console.log("Extracted RecId:", requestRecId_1);
+                    console.log("===========================");
                     flag = true;
                     if (formData.files && formData.files.length > 0) {
                         flag = false;
@@ -60655,7 +60713,7 @@ var MaintenanceRequest = function (props) {
                     }
                     return [3 /*break*/, 6];
                 case 5:
-                    error_2 = _b.sent();
+                    error_2 = _e.sent();
                     console.error("Error submitting Request:", error_2);
                     setModalHeading("Error");
                     setModalMessage(error_2.message);
