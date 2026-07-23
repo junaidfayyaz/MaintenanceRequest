@@ -70,21 +70,72 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
 
   const saveRequest = async (formData: IMaintenanceRequestFormData) => {
     try {
+      let subCatCol = props.SubCategory_col;
+      if (formData.Category === "Health") {
+        subCatCol = "par-98AFADB1E55E4A20A13E33E1FB3AAF38";
+      } else if (formData.Category === "Air Conditioning / Ventilation") {
+        subCatCol = "par-B035253478874BE79920984A1F401FFB";
+      } else if (formData.Category === "Electrical / Lighting") {
+        subCatCol = "par-D2D07B3A41DD4F16AD18A113344F6D86";
+      } else if (formData.Category === "Plumbing & Water Systems") {
+        subCatCol = "par-7CB209DA0FB045BE9CB5DFC4EFFB5A1B";
+      } else if (formData.Category === "Interior Fit-out") {
+        subCatCol = "par-DE49E6FD7AE5424A8DC1FDFAC56F6C3E";
+      } else if (formData.Category === "Fire Systems") {
+        subCatCol = "par-D08FBDD8FCD4434B85BEF12F75CF4B59";
+      } else if (formData.Category === "Elevators") {
+        subCatCol = "par-DCB8F64B2B274DF1852C51C0DC97147C";
+      } else if (formData.Category === "Cleaning") {
+        subCatCol = "par-E1D98ECA66DF4D4F98A625ACE4482589";
+      } else if (formData.Category === "Security") {
+        subCatCol = "par-2A2B853272424F679E129BA996561AAC";
+      } else if (formData.Category === "Pest Control") {
+        subCatCol = "par-8B027D154F64449BBC37690497DBB611";
+      } else if (formData.Category === "Landscaping") {
+        subCatCol = "par-242A02793B8B4D5BB8FEA98AFCAEA9F5";
+      } else if (formData.Category === "Mail Room") {
+        subCatCol = "par-6276B7DC33804760B17A9623EDB04806";
+      } else if (formData.Category === "Pantry Service") {
+        subCatCol = "par-35C4083864304869AD82C9042D97B697";
+      } else if (formData.Category === "Transportation") {
+        subCatCol = "par-1B9112137E2A4B028551FF05F3DCE00A";
+      } else if (formData.Category === "Meeting Room") {
+        subCatCol = "par-68701F56FB6C468A8C3C36D98213187B";
+      } else if (formData.Category === "Environment") {
+        subCatCol = "par-1EEE6900356A4924B3418EAA74B2CE0F";
+      } else if (formData.Category === "WorkSpace") {
+        subCatCol = "par-C8387403403C467B9CF1F6E3C33C1B8C";
+      } else if (formData.Category === "Quality") {
+        subCatCol = "par-4FCD70FCF19643D08CB6FDE4CB8D4200";
+      } else if (formData.Category === "Others") {
+        subCatCol = "par-C06F7C725B924E09ABF2D8EBBB103CA8";
+      }
+
+      const requestedForUsername = formData.requestedFor_Title ? formData.requestedFor_Title : (formData.requestedFor ? formData.requestedFor.split('@')[0] : "");
+
       let params: any = {
+        "ProfileLink": formData.requestedFor_key,
+        "Source": "Tahyya",
+        [props.ProfileLink_col]: formData.requestedFor_key,
         [props.Category_col]: formData.Category,
-        [props.SubCategory_col]: formData.SubCategory,
+        [subCatCol]: formData.SubCategory,
         [props.Department_col]: formData.Department,
         [props.Location_col]: formData.Location,
         [props.Description_col]: formData.Description,
-        [props.ProfileLink_col]: formData.requestedBy_key || formData.requestedFor_key,
         [props.SubmittedBy_col]: formData.requestedBy,
+        "RequestedBy": formData.requestedBy,
+        "RequestedFor": requestedForUsername,
+        "par-1FAC66E535124E2AA853A597E2994435": formData.requestedBy,
+        "par-1FAC66E535124E2AA853A597E2994435-recId": formData.requestedBy_key,
+        "par-8ADEEF4D4DEA4949A303E34C6D135E71": requestedForUsername,
+        "par-8ADEEF4D4DEA4949A303E34C6D135E71-recId": formData.requestedFor_key,
       };
 
       if (formData.Category_key) {
         params[`${props.Category_col}-recId`] = formData.Category_key;
       }
       if (formData.SubCategory_key) {
-        params[`${props.SubCategory_col}-recId`] = formData.SubCategory_key;
+        params[`${subCatCol}-recId`] = formData.SubCategory_key;
       }
 
       let payload = {
@@ -99,6 +150,9 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
           Symptom: formData.Description ? formData.Description : "Maintenance Request",
           Category: "",
           CreatedBy: formData.requestedBy,
+          RequestedBy: formData.requestedBy,
+          RequestedFor: requestedForUsername,
+          Source: "Tahyya"
         },
         subscriptionId: "EE937A037A90490D8A38B2437B567673",
       };
@@ -145,7 +199,7 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
       const requestRecId = rpcData?.strRequestRecId || dataObj?.RecId || dataObj?.recId || parsedData?.RecId;
 
       console.log("=== API RESPONSE RESULT ===");
-      console.log("Full Response Data:", parsedData);
+      console.log("Full Response Data:", JSON.stringify(parsedData, null, 2));
       console.log("Extracted ID (strRequestNum):", strRequestNum);
       console.log("Extracted RecId:", requestRecId);
       console.log("===========================");
@@ -194,7 +248,7 @@ const MaintenanceRequest: React.FC<IMaintenanceRequestProps> = (props) => {
     try {
       const ApiformData = new FormData();
       ApiformData.append("ObjectID", recid);
-      ApiformData.append("ObjectType", "Incident#"); // Based on API, might need to change if using ServiceReq
+      ApiformData.append("ObjectType", "ServiceReq#");
       ApiformData.append("File", fileObj.content, fileObj.name);
       
       const apiUrl = props.attachmentApilink;
